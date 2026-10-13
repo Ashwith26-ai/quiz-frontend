@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Management - Online Quiz Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+    <!-- Flash notifications -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Header -->
+    <div class="card card-custom p-4 mb-4 border-0 shadow-sm">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/quizzes}" class="text-decoration-none">Quizzes</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${quiz.title}">Quiz Title</li>
+                    </ol>
+                </nav>
+                <h3 class="fw-bold mb-1">
+                    <i class="bi bi-question-square-fill text-primary me-2"></i> Question Bank: <span th:text="${quiz.title}">Quiz Title</span>
+                </h3>
+                <small class="text-muted">
+                    Total Questions: <strong th:text="${questions.size()}">5</strong> &bull;
+                    Quiz Total Marks: <span th:text="${quiz.totalMarks}">5</span>
+                </small>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{'/admin/quizzes/' + ${quiz.id} + '/questions/new'}" class="btn btn-primary fw-semibold shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Add New Question
+                </a>
+                <a th:href="@{/admin/quizzes}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Quizzes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions List -->
+    <div th:if="${questions.isEmpty()}" class="card card-custom p-5 text-center shadow-sm">
+        <i class="bi bi-patch-question text-muted display-4 d-block mb-3"></i>
+        <h4 class="fw-bold text-secondary">No Questions Added Yet</h4>
+        <p class="text-muted small mb-3">This quiz does not have any questions. Click below to add multiple-choice questions.</p>
+        <div>
+            <a th:href="@{'/admin/quizzes/' + ${quiz.id} + '/questions/new'}" class="btn btn-primary px-4">
+                Add First Question
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${!questions.isEmpty()}" class="d-flex flex-column gap-3">
+        <div th:each="q, stat : ${questions}" class="card card-custom p-4 border-0 shadow-sm">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <span class="badge bg-primary px-3 py-2 rounded-pill fw-semibold">
+                    Question <span th:text="${stat.count}">1</span>
+                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-light text-dark border px-2 py-1">
+                        <span th:text="${q.marks + ' Mark(s)'}">1 Mark</span>
+                    </span>
+                    <a th:href="@{'/admin/quizzes/' + ${quiz.id} + '/questions/edit/' + ${q.id}}"
+                       class="btn btn-outline-secondary btn-sm" title="Edit Question">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a th:href="@{'/admin/quizzes/' + ${quiz.id} + '/questions/delete/' + ${q.id}}"
+                       class="btn btn-outline-danger btn-sm"
+                       onclick="return confirm('Are you sure you want to delete this question?')"
+                       title="Delete Question">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Question Text -->
+            <h5 class="fw-bold text-dark mb-3" th:text="${q.questionText}">Question text</h5>
+
+            <!-- Options Grid -->
+            <div class="row g-2">
+                <div th:each="opt, optStat : ${q.options}" class="col-md-6">
+                    <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between"
+                         th:classappend="${opt.correct} ? 'bg-success-subtle border-success' : 'bg-light'">
+                        <div>
+                            <span class="fw-bold me-2" th:text="${#strings.substring('ABCD', optStat.index, optStat.index + 1) + '.'}">A.</span>
+                            <span th:text="${opt.optionText}">Option text</span>
+                        </div>
+                        <span th:if="${opt.correct}" class="badge bg-success">
+                            <i class="bi bi-check-lg"></i> Correct Answer
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

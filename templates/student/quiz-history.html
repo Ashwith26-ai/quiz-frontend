@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz History - Online Quiz Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-clock-history text-primary me-2"></i> Examination History</h2>
+            <p class="text-muted mb-0">Review your past scores, percentages, and performance breakdowns</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/student/quizzes}" class="btn btn-primary fw-semibold">
+                <i class="bi bi-play-circle me-1"></i> Take a Quiz
+            </a>
+            <a th:href="@{/student/dashboard}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- History Card -->
+    <div class="card card-custom p-4 border-0 shadow-sm">
+        <div th:if="${attempts.isEmpty()}" class="text-center py-5">
+            <i class="bi bi-clipboard-x text-muted display-3 mb-3"></i>
+            <h4 class="fw-bold text-secondary">No Records Found</h4>
+            <p class="text-muted">You have not completed any quizzes yet.</p>
+            <a th:href="@{/student/quizzes}" class="btn btn-primary px-4 mt-2">Take Your First Quiz</a>
+        </div>
+
+        <div th:if="${!attempts.isEmpty()}" class="table-responsive">
+            <table class="table table-hover table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Quiz Title</th>
+                        <th>Date & Time</th>
+                        <th>Marks Obtained</th>
+                        <th>Percentage</th>
+                        <th>Passing Marks</th>
+                        <th>Status</th>
+                        <th class="text-end">Scorecard</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="att, stat : ${attempts}">
+                        <td class="text-muted fw-bold" th:text="${stat.count}">1</td>
+                        <td>
+                            <strong class="text-dark" th:text="${att.quiz.title}">Java Programming</strong>
+                        </td>
+                        <td class="text-muted small" th:text="${#temporals.format(att.startTime, 'dd MMM yyyy, hh:mm a')}">Date</td>
+                        <td>
+                            <span class="fw-bold text-primary" th:text="${att.score}">0</span> / <span th:text="${att.quiz.totalMarks}">5</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold" th:text="${att.percentage + '%'}">0%</span>
+                        </td>
+                        <td class="text-muted" th:text="${att.quiz.passingMarks}">3</td>
+                        <td>
+                            <span th:if="${att.status.name() == 'PASSED'}" class="badge bg-success badge-pill">
+                                <i class="bi bi-check-circle me-1"></i> PASSED
+                            </span>
+                            <span th:if="${att.status.name() == 'FAILED'}" class="badge bg-danger badge-pill">
+                                <i class="bi bi-x-circle me-1"></i> FAILED
+                            </span>
+                            <span th:if="${att.status.name() == 'IN_PROGRESS'}" class="badge bg-warning text-dark badge-pill">
+                                <i class="bi bi-hourglass-split me-1"></i> IN PROGRESS
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a th:if="${att.status.name() != 'IN_PROGRESS'}"
+                               th:href="@{'/student/quiz/result/' + ${att.id}}"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-card-text me-1"></i> View Result
+                            </a>
+                            <a th:if="${att.status.name() == 'IN_PROGRESS'}"
+                               th:href="@{'/student/quiz/attempt/' + ${att.id}}"
+                               class="btn btn-warning btn-sm fw-bold">
+                                Resume
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

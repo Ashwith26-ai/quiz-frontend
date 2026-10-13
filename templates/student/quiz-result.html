@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result - Online Quiz Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        @media print {
+            .navbar-custom, footer, .no-print { display: none !important; }
+            body { background: #fff !important; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+    <!-- Flash message -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show no-print" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Performance Summary Card -->
+    <div class="card card-custom p-4 p-md-5 mb-4 shadow text-center">
+        <!-- Pass/Fail Badge -->
+        <div class="mb-3">
+            <span th:if="${attempt.status.name() == 'PASSED'}" class="badge bg-success-subtle text-success px-4 py-2 rounded-pill fs-6 fw-bold">
+                <i class="bi bi-patch-check-fill me-1"></i> EXAMINATION PASSED
+            </span>
+            <span th:if="${attempt.status.name() == 'FAILED'}" class="badge bg-danger-subtle text-danger px-4 py-2 rounded-pill fs-6 fw-bold">
+                <i class="bi bi-x-circle-fill me-1"></i> EXAMINATION FAILED
+            </span>
+        </div>
+
+        <!-- Score Ring -->
+        <div class="score-circle" th:classappend="${attempt.status.name() == 'PASSED'} ? 'pass' : 'fail'">
+            <span class="fs-1 fw-extrabold" th:text="${attempt.score}">0</span>
+            <small class="text-uppercase fw-semibold" style="font-size: 0.75rem;">OUT OF <span th:text="${quiz.totalMarks}">5</span></small>
+        </div>
+
+        <h3 class="fw-bold mb-1" th:text="${quiz.title}">Java Programming Fundamentals</h3>
+        <p class="text-muted small mb-4">
+            Candidate: <strong th:text="${student.fullName}">Rahul Sharma</strong> &bull;
+            Submitted: <span th:text="${#temporals.format(attempt.submissionTime, 'dd MMM yyyy, hh:mm a')}">Date</span>
+        </p>
+
+        <!-- Metric Details -->
+        <div class="row g-3 justify-content-center max-w-xl mx-auto mb-4" style="max-width: 600px;">
+            <div class="col-4">
+                <div class="p-3 bg-light rounded-3 border">
+                    <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Percentage</small>
+                    <span class="fw-bold fs-5 text-primary" th:text="${attempt.percentage + '%'}">80%</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-3 bg-light rounded-3 border">
+                    <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Passing Marks</small>
+                    <span class="fw-bold fs-5 text-dark" th:text="${quiz.passingMarks}">3</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-3 bg-light rounded-3 border">
+                    <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Result Status</small>
+                    <span class="fw-bold fs-5" th:classappend="${attempt.status.name() == 'PASSED'} ? 'text-success' : 'text-danger'"
+                          th:text="${attempt.status}">PASSED</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-center gap-2 no-print">
+            <a th:href="@{/student/quizzes}" class="btn btn-primary px-4 fw-semibold">
+                <i class="bi bi-play-circle me-1"></i> Take Another Quiz
+            </a>
+            <a th:href="@{/student/dashboard}" class="btn btn-outline-secondary px-3">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+            <button onclick="window.print()" class="btn btn-outline-dark px-3">
+                <i class="bi bi-printer me-1"></i> Print Result
+            </button>
+        </div>
+    </div>
+
+    <!-- Question-by-Question Detailed Breakdown -->
+    <div class="card card-custom p-4 border-0 shadow-sm">
+        <h4 class="fw-bold text-dark mb-4">
+            <i class="bi bi-card-checklist text-primary me-2"></i> Detailed Performance Review
+        </h4>
+
+        <div class="d-flex flex-column gap-3">
+            <div th:each="ans, stat : ${answers}" class="border rounded-3 p-3 p-md-4 bg-white">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
+                        Question <span th:text="${stat.count}">1</span>
+                    </span>
+                    <!-- Status indicator -->
+                    <span th:if="${ans.marksAwarded > 0}" class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-bold">
+                        <i class="bi bi-check-circle-fill me-1"></i> Correct (+<span th:text="${ans.marksAwarded}">1</span> mark)
+                    </span>
+                    <span th:if="${ans.marksAwarded == 0 && ans.selectedOption != null}" class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill fw-bold">
+                        <i class="bi bi-x-circle-fill me-1"></i> Incorrect (0 marks)
+                    </span>
+                    <span th:if="${ans.selectedOption == null}" class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill fw-bold">
+                        <i class="bi bi-dash-circle-fill me-1"></i> Unanswered (0 marks)
+                    </span>
+                </div>
+
+                <!-- Question Text -->
+                <h6 class="fw-bold text-dark mb-3 lh-base" th:text="${ans.question.questionText}">Question text</h6>
+
+                <!-- Answer comparison -->
+                <div class="row g-2">
+                    <!-- Student's Choice -->
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3"
+                             th:classappend="${ans.marksAwarded > 0} ? 'bg-success-subtle border border-success' : (${ans.selectedOption != null} ? 'bg-danger-subtle border border-danger' : 'bg-light border')">
+                            <small class="d-block text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Your Answer</small>
+                            <span class="fw-semibold" th:if="${ans.selectedOption != null}" th:text="${ans.selectedOption.optionText}">Student Option</span>
+                            <span class="fst-italic text-muted" th:if="${ans.selectedOption == null}">No option selected (Skipped)</span>
+                        </div>
+                    </div>
+
+                    <!-- Correct Answer Key -->
+                    <div class="col-md-6">
+                        <div class="p-3 bg-success-subtle border border-success rounded-3">
+                            <small class="d-block text-success text-uppercase fw-bold" style="font-size: 0.7rem;">Correct Answer</small>
+                            <span class="fw-semibold text-success-emphasis"
+                                  th:if="${ans.question.correctOption != null}"
+                                  th:text="${ans.question.correctOption.optionText}">Correct Option Text</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

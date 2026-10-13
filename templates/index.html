@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster Pro - Online Quiz Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main>
+    <!-- Hero Section -->
+    <section class="hero-section text-center">
+        <div class="container py-4">
+            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+                <i class="bi bi-mortarboard-fill me-1"></i> Academic Project Edition 2026
+            </span>
+            <h1 class="display-4 fw-extrabold mb-3">Online Quiz Management System</h1>
+            <p class="lead max-w-2xl mx-auto mb-4 text-white-50" style="max-width: 750px;">
+                A comprehensive, secure, and modern web application for conducting online examinations,
+                managing multiple-choice quizzes, tracking student performance, and analyzing results in real time.
+            </p>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a sec:authorize="!isAuthenticated()" th:href="@{/register}" class="btn btn-warning btn-lg px-4 fw-bold shadow">
+                    <i class="bi bi-person-plus-fill me-2"></i> Register as Student
+                </a>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="btn btn-outline-light btn-lg px-4">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Account Login
+                </a>
+                <a sec:authorize="hasRole('STUDENT')" th:href="@{/student/quizzes}" class="btn btn-warning btn-lg px-4 fw-bold shadow">
+                    <i class="bi bi-play-circle-fill me-2"></i> View Available Quizzes
+                </a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" class="btn btn-warning btn-lg px-4 fw-bold shadow">
+                    <i class="bi bi-speedometer2 me-2"></i> Go to Admin Dashboard
+                </a>
+                <a th:href="@{/about}" class="btn btn-dark btn-lg px-4 bg-opacity-50 border-white-50">
+                    <i class="bi bi-file-earmark-code me-2"></i> System Overview
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Demo Accounts Alert Banner -->
+    <div class="container mt-4">
+        <div class="card bg-white border-primary shadow-sm" style="border-left: 5px solid var(--primary-color) !important;">
+            <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <h5 class="card-title text-primary fw-bold mb-1">
+                        <i class="bi bi-key-fill me-2"></i> Demo Credentials (Pre-seeded in Database)
+                    </h5>
+                    <p class="card-text text-muted mb-0 small">
+                        Use these credentials to immediately evaluate the system without manual registration:
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <div class="p-2 px-3 bg-light rounded border">
+                        <span class="badge bg-primary me-1">Admin</span>
+                        <code>admin@quiz.com</code> / <code>admin123</code>
+                    </div>
+                    <div class="p-2 px-3 bg-light rounded border">
+                        <span class="badge bg-info text-dark me-1">Student</span>
+                        <code>student@quiz.com</code> / <code>student123</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Features Grid -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h6 class="text-primary fw-bold text-uppercase letter-spacing-1">Key Capabilities</h6>
+            <h2 class="fw-bold">Engineered for Academic Excellence</h2>
+            <p class="text-muted">Built following professional software engineering principles and layered MVC architecture.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-4">
+                <div class="card card-custom card-hover h-100 p-4">
+                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 55px; height: 55px;">
+                        <i class="bi bi-stopwatch-fill fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Automated Timer & Auto-Submit</h5>
+                    <p class="text-muted small">
+                        Calculates remaining time server-side with client-side visual synchronization.
+                        Automatically finalizes and submits answers when the timer runs out.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="col-md-4">
+                <div class="card card-custom card-hover h-100 p-4">
+                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 55px; height: 55px;">
+                        <i class="bi bi-shield-check fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Server-Side Scoring & Security</h5>
+                    <p class="text-muted small">
+                        Zero trust for browser-submitted scores. Answers are evaluated securely on the backend against database keys, preventing cheating and DOM inspection.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="col-md-4">
+                <div class="card card-custom card-hover h-100 p-4">
+                    <div class="rounded-circle bg-info bg-opacity-10 text-info p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 55px; height: 55px;">
+                        <i class="bi bi-diagram-3-fill fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Interactive Question Palette</h5>
+                    <p class="text-muted small">
+                        Students can review answered vs unanswered questions dynamically with color-coded badges, navigate back and forth, and confirm before submission.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="col-md-4">
+                <div class="card card-custom card-hover h-100 p-4">
+                    <div class="rounded-circle bg-warning bg-opacity-10 text-warning p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 55px; height: 55px;">
+                        <i class="bi bi-person-lock fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Role-Based Access Control</h5>
+                    <p class="text-muted small">
+                        Spring Security enforces separation between Administrator and Student roles with BCrypt password hashing and custom authentication filters.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="col-md-4">
+                <div class="card card-custom card-hover h-100 p-4">
+                    <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 55px; height: 55px;">
+                        <i class="bi bi-database-fill-check fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Robust Relational Database</h5>
+                    <p class="text-muted small">
+                        Strict relational normalization in MySQL 8.0 with foreign keys, cascading constraints, and JPA Hibernate ORM mapping for clean data integrity.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="col-md-4">
+                <div class="card card-custom card-hover h-100 p-4">
+                    <div class="rounded-circle bg-secondary bg-opacity-10 text-secondary p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 55px; height: 55px;">
+                        <i class="bi bi-pie-chart-fill fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Instant Analytics & History</h5>
+                    <p class="text-muted small">
+                        Provides students with detailed scorecards and question-by-question explanations, while giving administrators aggregate class performance reports.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="bg-white py-5 border-top border-bottom">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h6 class="text-primary fw-bold text-uppercase">Workflow</h6>
+                <h2 class="fw-bold">How the System Operates</h2>
+            </div>
+
+            <div class="row text-center g-4">
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold fs-4 mb-3" style="width: 60px; height: 60px;">1</div>
+                        <h5 class="fw-bold">Register & Login</h5>
+                        <p class="text-muted small">Students create accounts or use pre-configured credentials to sign in safely.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold fs-4 mb-3" style="width: 60px; height: 60px;">2</div>
+                        <h5 class="fw-bold">Select a Quiz</h5>
+                        <p class="text-muted small">Browse published quizzes, read instructions, total marks, and duration details.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold fs-4 mb-3" style="width: 60px; height: 60px;">3</div>
+                        <h5 class="fw-bold">Answer with Timer</h5>
+                        <p class="text-muted small">Navigate between multiple-choice questions while the countdown timer runs.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold fs-4 mb-3" style="width: 60px; height: 60px;">4</div>
+                        <h5 class="fw-bold">Immediate Results</h5>
+                        <p class="text-muted small">View marks obtained, percentage, pass/fail status, and correct answer breakdowns.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
